@@ -72,7 +72,7 @@
                         }
                         return "transparent";
                     } ,
-                    resolution: 128
+                    resolution: 64
                 });
                 heatmap_asaltos.addTo(map);
                 });
@@ -130,15 +130,18 @@
                         }
                         return "transparent";
                     } ,
-                    resolution: 128
+                    resolution: 64
                 });
                 heatmap_robos.addTo(map);
+                let base = {
+                    "Base":baseLayer
+                }
                 var overlays = {
                     // "Bancos en distritos con mas robos": bancos,
                     "Heatmap asaltos": heatmap_asaltos,
                     "Heatmap robos": heatmap_robos
                 };
-                L.control.layers(overlays).addTo(map);
+                L.control.layers(base, overlays).addTo(map);
                 });
             });
 
