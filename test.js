@@ -139,7 +139,8 @@ function calculateDistribution(repeticiones){
     } 
     const desviacionMuestral = Math.sqrt(sumaDiferencias/(repeticiones.length-1))
     console.log(media + (desviacionMuestral))
+    console.log(media)
     console.log(desviacionMuestral)
 }
 
-calculateDistribution(codigosAsaltos, repeticionesAsaltos)
+calculateDistribution( repeticionesRobos)
