@@ -1,0 +1,145 @@
+<html>
+<head><title>Leaflet Essentials</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+</head>
+<body>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/georaster"></script>
+    <script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+    <div id="map" style="width: 100%; height: 600px;"></div>
+    <script>
+        var map = L.map('map').setView([9.7489, -83.7534], 8); // Coordenadas de Costa Rica
+
+        var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var url_to_geotiff_file_asaltos = "https://github.com/Josue-Echeverria/ProyectoSIG/blob/main/heatmap_asaltos_formated.tif";
+        var url_to_geotiff_file_robos = "https://github.com/Josue-Echeverria/ProyectoSIG/blob/main/heatmap_robos_formated.tif";
+        
+        let heatmap_asaltos;
+        fetch(url_to_geotiff_file_asaltos, {mode: 'no-cors'})
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => {
+                parseGeoraster(arrayBuffer).then(georaster => {
+                console.log("georaster:", georaster);
+                heatmap_asaltos = new GeoRasterLayer({
+                    georaster: georaster,
+                    opacity: 0.6,
+                    pixelValuesToColorFn: function (value) {
+                        const colorMap = {
+                            "0-5": "#0000FF",     // Azul oscuro
+                            "5-10": "#001FFF",    // Azul intermedio
+                            "10-15": "#003FFF",   // Azul medio
+                            "15-20": "#005FFF",   // Azul claro
+                            "20-25": "#007FFF",   // Azul más claro
+                            "25-30": "#009FFF",   // Cian-azul
+                            "30-35": "#00BFFF",   // Cian
+                            "35-40": "#00DFFF",   // Cian más claro
+                            "40-45": "#00FFFF",   // Cian puro
+                            "45-50": "#00FFDF",   // Cian-verde claro
+                            "50-55": "#00FFBF",   // Verde azulado
+                            "55-60": "#00FF9F",   // Verde más claro
+                            "60-65": "#00FF7F",   // Verde claro
+                            "65-70": "#00FF5F",   // Verde medio
+                            "70-75": "#00FF3F",   // Verde amarillento
+                            "75-80": "#00FF1F",   // Verde más intenso
+                            "80-85": "#00FF00",   // Verde puro
+                            "85-90": "#1FFF00",   // Verde-amarillo claro
+                            "90-95": "#3FFF00",   // Verde-amarillo intermedio
+                            "95-100": "#5FFF00",  // Verde-amarillo
+                            "100-105": "#7FFF00", // Amarillo-verde
+                            "105-110": "#9FFF00", // Amarillo claro
+                            "110-115": "#BFFF00", // Amarillo medio
+                            "115-120": "#DFFF00", // Amarillo brillante
+                            "120-125": "#FFFF00", // Amarillo puro
+                            "125-130": "#FFDF00", // Amarillo-naranja
+                            "130-135": "#FFBF00", // Naranja claro
+                            "135-140": "#FF9F00", // Naranja medio
+                            "140-145": "#FF7F00", // Naranja
+                            "145-150": "#FF5F00", // Naranja rojizo
+                            "150-155": "#FF3F00", // Rojo-naranja
+                            "155-165": "#FF0000", // Rojo-naranja
+                        };
+                        for (const range in colorMap) {
+                            const [min, max] = range.split('-').map(Number);
+                            if (value >= min && value <= max) {
+                                return colorMap[range];
+                            }
+                        }
+                        return "transparent";
+                    } ,
+                    resolution: 128
+                });
+                heatmap_asaltos.addTo(map);
+                });
+            });
+
+        let heatmap_robos;
+        fetch(url_to_geotiff_file_robos, {mode: 'no-cors'})
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => {
+                parseGeoraster(arrayBuffer).then(georaster => {
+                console.log("georaster:", georaster);
+                heatmap_robos = new GeoRasterLayer({
+                    georaster: georaster,
+                    opacity: 0.6,
+                    pixelValuesToColorFn: function (value) {
+                        const colorMap = {
+                            "0-5": "#0000FF",     // Azul oscuro
+                            "5-10": "#001FFF",    // Azul intermedio
+                            "10-15": "#003FFF",   // Azul medio
+                            "15-20": "#005FFF",   // Azul claro
+                            "20-25": "#007FFF",   // Azul más claro
+                            "25-30": "#009FFF",   // Cian-azul
+                            "30-35": "#00BFFF",   // Cian
+                            "35-40": "#00DFFF",   // Cian más claro
+                            "40-45": "#00FFFF",   // Cian puro
+                            "45-50": "#00FFDF",   // Cian-verde claro
+                            "50-55": "#00FFBF",   // Verde azulado
+                            "55-60": "#00FF9F",   // Verde más claro
+                            "60-65": "#00FF7F",   // Verde claro
+                            "65-70": "#00FF5F",   // Verde medio
+                            "70-75": "#00FF3F",   // Verde amarillento
+                            "75-80": "#00FF1F",   // Verde más intenso
+                            "80-85": "#00FF00",   // Verde puro
+                            "85-90": "#1FFF00",   // Verde-amarillo claro
+                            "90-95": "#3FFF00",   // Verde-amarillo intermedio
+                            "95-100": "#5FFF00",  // Verde-amarillo
+                            "100-105": "#7FFF00", // Amarillo-verde
+                            "105-110": "#9FFF00", // Amarillo claro
+                            "110-115": "#BFFF00", // Amarillo medio
+                            "115-120": "#DFFF00", // Amarillo brillante
+                            "120-125": "#FFFF00", // Amarillo puro
+                            "125-130": "#FFDF00", // Amarillo-naranja
+                            "130-135": "#FFBF00", // Naranja claro
+                            "135-140": "#FF9F00", // Naranja medio
+                            "140-145": "#FF7F00", // Naranja
+                            "145-150": "#FF5F00", // Naranja rojizo
+                            "150-155": "#FF3F00", // Rojo-naranja
+                            "155-165": "#FF0000", // Rojo-naranja
+                        };
+                        for (const range in colorMap) {
+                            const [min, max] = range.split('-').map(Number);
+                            if (value >= min && value <= max) {
+                                return colorMap[range];
+                            }
+                        }
+                        return "transparent";
+                    } ,
+                    resolution: 128
+                });
+                heatmap_robos.addTo(map);
+                var overlays = {
+                   "Heatmap asaltos": heatmap_asaltos,
+                    "Heatmap robos": heatmap_robos
+                };
+                L.control.layers(overlays).addTo(map);
+                });
+            });
+        
+        
+    </script>
+</body>
+</html>
