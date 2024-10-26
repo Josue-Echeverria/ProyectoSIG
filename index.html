@@ -17,6 +17,8 @@
 
         var url_to_geotiff_file_asaltos = "./heatmap_asaltos_formated.tif";
         var url_to_geotiff_file_robos = "./heatmap_robos_formated.tif";
+        var url_geojson_bancos_distritos_mas_robos = "./bancos_distritos_mas_robos.geojson";
+        var url_geojson_hoteles_distritos_mas_asaltos = "./hoteles_distritos_mas_asaltos.geojson";
         
         let heatmap_asaltos;
         fetch(url_to_geotiff_file_asaltos, {mode: 'no-cors'})
@@ -132,14 +134,53 @@
                 });
                 heatmap_robos.addTo(map);
                 var overlays = {
-                   "Heatmap asaltos": heatmap_asaltos,
+                    // "Bancos en distritos con mas robos": bancos,
+                    "Heatmap asaltos": heatmap_asaltos,
                     "Heatmap robos": heatmap_robos
                 };
                 L.control.layers(overlays).addTo(map);
                 });
             });
-        
-        
+
+        let hoteles;
+        fetch(url_geojson_hoteles_distritos_mas_asaltos)
+            .then(response => response.json())
+            .then(data => {
+                hoteles = L.geoJSON(data,  {
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties) {
+                            var popupContent = "<b>Hotel:</b> " + feature.properties.NOMBRE + "<br>" +
+                                               "<b>Dirección:</b> " + feature.properties.DIRECCION + "<br>" +
+                                               "<b>Teléfono:</b> " + feature.properties.TELEFONO;
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+            });
+            
+        let bancos;
+        fetch(url_geojson_bancos_distritos_mas_robos)
+            .then(response => response.json())
+            .then(data => {
+                bancos = L.geoJSON(data,  {
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties) {
+                            var popupContent = "<b>Banco:</b> " + feature.properties.BANCO + "<br>" +
+                                               "<b>Provincia:</b> " + feature.properties.PROVINCIA + "<br>" +
+                                               "<b>Canton:</b> " + feature.properties.CANTON + "<br>" +
+                                               "<b>Distrito:</b> " + feature.properties.DISTRITO + "<br>" +
+                                               "<b>Dirección:</b> " + feature.properties.DIRECCION + "<br>" +
+                                               "<b>Teléfono:</b> " + feature.properties.TELEFONO;
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+                var overlays = {
+                    "Bancos en distritos con mas robos": bancos,
+                    "Hoteles en distritos con mas asaltos": hoteles
+                };
+                L.control.layers(null,overlays).addTo(map);
+            });
     </script>
 </body>
 </html>
